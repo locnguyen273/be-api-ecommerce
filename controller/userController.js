@@ -33,10 +33,10 @@ const loginUser = asyncHandler(async (req, res) => {
     const updateUser = await User.findByIdAndUpdate(
       findUser._id,
       {
-        refreshToken: refreshToken
+        refreshToken: refreshToken,
       },
       {
-        new: true
+        new: true,
       }
     );
     const data = {
@@ -49,8 +49,8 @@ const loginUser = asyncHandler(async (req, res) => {
     };
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      maxAge: 72 * 60 * 60 * 1000
-    })
+      maxAge: 72 * 60 * 60 * 1000,
+    });
     res.send({ success: true, data: data });
   } else {
     throw new Error("Thông tin không hợp lệ");
@@ -63,18 +63,37 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
   if (!cookie.refreshToken) throw new Error("No refresh token in cookie");
   const refreshToken = cookie.refreshToken;
   const user = await User.findOne({ refreshToken });
-  if (!user) throw new Error("No refresh token present in database or not matched");
+  if (!user)
+    throw new Error("No refresh token present in database or not matched");
   jwt.verify(refreshToken, process.env.JWT_SECRET, (error, decoded) => {
     if (error || user.id !== decoded.id) {
       throw new Error("There is something wrong with refresh token");
     }
     const accessToken = generateToken(user?._id);
-    res.send({ success: true, accessToken })
+    res.send({ success: true, accessToken });
   });
 });
 // logout
 const logout = asyncHandler(async (req, res) => {
-
+  const cookie = req.cookies;
+  if (!cookie.refreshToken) throw new Error("No refresh token in cookies");
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if (!user) {
+    res.clearCookies("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.sendStatus(204); 
+  }
+  await User.findOneAndUpdate(refreshToken, {
+    refreshToken: "",
+  });
+  res.clearCookies("refreshToken", {
+    httpOnly: true,
+    secure: true,
+  });
+  return res.sendStatus(204); // forbidden
 });
 // Update Information User
 const updateInformationUser = asyncHandler(async (req, res) => {

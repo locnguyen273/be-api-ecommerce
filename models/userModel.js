@@ -5,7 +5,6 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
-    index: true,
   },
   lastName: {
     type: String,
@@ -28,6 +27,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  cart: {
+    type: Array,
+    default: [],
+  },
+  address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
+  wishList: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+  refreshToken: {
+    type: String,
+  }
+}, {
+  timestamps: true,
 });
 
 userSchema.pre("save", async function (next) {

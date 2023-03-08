@@ -4,34 +4,35 @@ const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
+      unique: true,
     },
     slug: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
       lowercase: true,
     },
     description: {
       type: String,
-      require: true,
+      required: true,
     },
     price: {
       type: Number,
-      require: true,
+      required: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      type: String,
+      required: true,
     },
     brand: {
       type: String,
-      enum: ["Apple", "Samsung", "Lenovo"],
+      required: true,
     },
     quantity: {
       type: Number,
-      require: true,
+      required: true,
     },
     sold: {
       type: Number,
@@ -42,7 +43,7 @@ const productSchema = new mongoose.Schema(
     },
     color: {
       type: String,
-      enum: ["Black", "White", "Red"],
+      required: true,
     },
     ratings: [
       {

@@ -8,8 +8,10 @@ const authRouter = require("./routes/authRoute");
 const productRouter = require("./routes/productRoute");
 const PORT = process.env.PORT || 5000;
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
 dbConnect();
 
+app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
